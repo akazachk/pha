@@ -19,10 +19,9 @@ Included in this package is also a set of Python tools for automatically generat
 5. Algorithms
 6. How do I perform more experiments?
 7. How do I get tables?
-8. Environment variables
-9. Notes
-10. Package contents
-11. Whom do I talk to?
+8. Notes
+9. Package contents
+10. Whom do I talk to?
 
 
 ## Installation instructions summary ##
