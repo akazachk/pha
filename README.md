@@ -1,6 +1,6 @@
 # Partial hyperplane activation for generalized intersection cuts #
 ##### Name: README
-##### Author: Aleksandr M. Kazachkov, Carnegie Mellon University and Polytechnique Montreal, aleksandr DOT kazachkov AT polymtl DOT ca, http://andrew.cmu.edu/~akazachk/
+##### Author: Aleksandr M. Kazachkov, Carnegie Mellon University and Polytechnique Montreal, aleksandr DOT kazachkov AT polymtl DOT ca, https://akazachk.github.io/
 ##### Code for joint paper with Selvaprabu Nadarajah, Egon Balas, and Francois Margot
 ##### Last edit: July 2019
 
@@ -12,9 +12,9 @@ Included in this package is also a set of Python tools for automatically generat
 
 
 ## Contents ##
-1. Quick start
-2. Installation requirements
-3. Compilation instructions
+1. Installation instructions summary
+2. More detailed installation requirements
+3. Testing best parameter combinations
 4. Parameters
 5. Algorithms
 6. How do I perform more experiments?
@@ -25,13 +25,51 @@ Included in this package is also a set of Python tools for automatically generat
 11. Whom do I talk to?
 
 
-## Quick start ##
+## Installation instructions summary ##
 
-0. Ensure that the `COIN_OR` code is properly set up (use the `install_coin.sh` script under `scripts`).
+1. Set the environment variable `PHA_DIR`, pointing to the directory in which the PHA code is located.
 
-1. These scripts assume that you first compiled the `Release` version of code. Otherwise, it can be done by calling, from `${PHA_DIR}` (assuming all environment variables and dependencies are set up),
+2. Ensure that the `COIN_OR` code is properly set up (use the `install_coin.sh` script under the `scripts` directory). The script by default installs the COIN-OR files with `debug` mode disabled, but it can be easily modified (the code is already in the file) to compile with `enable-debug=true`. You can test the COIN-OR setup with `make test` from the `build` or `buildg` subdirectory in which the code was installed.
+
+3. From `${PHA_DIR}` (assuming all environment variables and dependencies are set up correctly; in particular, check that the COIN-OR variables in `makefile` are properly set), call
 
         make release
+
+  which will create the executable `${PHA_DIR}/Release/PHA`.
+	
+  If the debug version is desired, call `make debug`, which will create the executable `{PHA_DIR}/Debug/PHA`.
+
+4. Test the code by running `run_test.sh` from the `tests` directory.
+
+5. For a description of the arguments that the executable takes, run
+        
+        ${PHA_DIR}/[Debug or Release]/PHA --help
+
+
+## More detailed installation requirements ##
+
+1. Optional: Set up BLAS and LAPACK, which can be used for computing condition numbers, but are not required. You will need to use the shared library versions. If they are installed locally, e.g., in `${PHA_DIR}/lib`, you will need to adjust the environment variable `LD_LIBRARY_PATH` to point to `${PHA_DIR}/lib`. On Mac, you simply need to have the Accelerate framework installed and set
+
+        export ENV_LAPACK_LIB="-framework Accelerate"
+        export ENV_BLAS_LIB="-framework Accelerate"
+	
+  On Linux, define (depending on your environment)
+
+        export ENV_LAPACK_LIB="/usr/lib64"
+        export ENV_LAPACK_LIB_NAME="liblapack.so.3"
+        export ENV_BLAS_LIB="/usr/lib64"
+        export ENV_BLAS_LIB_NAME="libblas.so.3"
+	
+2. A version of Cgl from COIN-OR (latest tested is 0.59), which comes with Clp (latest tested is 1.16). The code may run differently on different versions. You can use the `install_coin.sh` script provided under the `scripts` directory, or use your own existing installation, for which you will need to modify the `makefile` variables `COIN_OR_DIR`, `COIN_VERSION`, etc.
+	
+3. For scripts and compiling tables, Python 2 (maybe will work with Python 3, but untested) with `matplotlib` (which in turn requires `six`). You also need to set `PYTHONPATH` correctly. On my system, I used
+
+        export PYTHONPATH="${PYTHONPATH}:${PHA_DIR}/scripts/python_scripts:${PHA_DIR}/scripts/python_scripts/lib64/python:${PHA_DIR}/scripts/python_scripts/lib/python"
+
+
+## Testing best parameter combinations ##
+
+1. These scripts assume that you first compiled the `Release` version of code.
 
 2. The following will run the _best_ set of parameters for each instance (where best is in terms of percent integrality gap closed). The `1` indicates that, to speed things up, the code is run in batches as in the file `data/instances/all.batch`. *NOTE: if you are on a shared computer, running the command below will start 16 processes in parallel.*
 
@@ -70,46 +108,6 @@ Included in this package is also a set of Python tools for automatically generat
 9. Table 7 is produced manually by comparing the gap closed in our experiments to the relevant rows in Tables 1 and 2 of the paper "On optimizing over lift-and-project closures" by Pierre Bonami published in _Mathematical Programming Computation_ in 2012.
 
 
-## What do I need? (Installed on review machine by authors) ##
-
-1. A version of Cgl from COIN-OR (latest tested is 0.59), which comes with Clp (latest tested is 1.16). The code may run differently on different versions. Instructions are below (from main directory). The below will work for the `Release` version of the code; the `Debug` version assumes that instead of `build`, a `buildg` directory is created under `Cgl-0.59`, and typically `enable_debug=yes` is set in the `config.site` file. For the review machine, only the `Release` version is prepared by the authors.
-
-        mkdir -p coin-or
-        svn co https://projects.coin-or.org/svn/Cgl/stable/0.59 coin-or/Cgl-0.59
-        mkdir coin-or/Cgl-0.59/build
-        mkdir coin-or/Cgl-0.59/build/share
-        cp scripts/coin_scripts/linux_release_config.site coin-or/Cgl-0.59/build/share/config.site
-        cd coin-or/Cgl-0.59/build 
-        ../configure -C >& last_config.txt
-        tail -n 1 last_config.txt
-        make
-        make install
-        make test
-
-2. BLAS and LAPACK (included in Accelerate framework on Mac).
-3. For scripts and compiling tables, Python 2 (maybe will work with Python 3) with `matplotlib` (which in turn requires `six`).
-
-
-## Installation requirements ##
-
-1. Set up all environment variables (see below).
-2. Ensure BLAS and LAPACK are working properly. You will need to use the shared library versions. This has been installed locally on the review machine in `lib/compilation_files`. Note that in this case one will need to adjust the environment variable `LD_LIBRARY_PATH` to point to `${PHA_DIR}/lib`.
-3. Ensure Cgl code is properly set up and works on the machine. Under `scripts/coin_scripts`, there are config files that have worked on Macs (`mac_*_config.site`) and Linux (`linux_*_config.site`), where * = debug or release. Change the `SYSTEM` variable in the script to `mac` or `linux` as appropriate.
-4. Call
-
-        make dir_release
-        make release
-
-    If you want to use the `Debug` version, use
-
-        make dir_debug
-        make debug
-
-    For a description of the arguments that the executable takes, run
-        
-        ${PHA_DIR}/[Debug or Release]/PHA --help
-
-
 ## Parameters ##
 
 The options available can be obtained by running
@@ -118,7 +116,7 @@ The options available can be obtained by running
 
 It is required that you specify an instance (with option `-i`) and the output directory (with option `-o`). You may select where the logging is outputted via `--log_file` and you can allow percent gap closed to be calculated by the code by pointing it to a comma-separated file with the optimal IP values for the instances, which we currently keep in `data/ip_opt.csv`, specified to the code via `--opt_file`.
 
-The code includes various other parameters, discussed in Section 6 of the paper (see Table 2 on page 20). The default parameters can be found in `data/params/pha-params.txt` and can be specified via the `-p` option.
+The code includes various other parameters, discussed in Section 6 of the paper (see Table 2 on page 20). The default parameters can be found in `data/params/pha-params.txt`; this file can be provided to the code via the `-p` option.
 
 The default parameters are (the last eight remain constant throughout our experiments)
 
@@ -150,12 +148,12 @@ The algorithms in the paper are implemented in the code in `CglPHA.cpp`. They ar
     * Which instances do you want to test on? This is given via a file `{name}.instances` (which is intended for running the instances sequentially) or `{name}.batch` (which is for running the instances in batches), that should be put into `data/instances`. Possible choices are:
         * `all`, every instance tested (available as both `all.instances` and `all.batch`)
         * `quick`, a subset of the instances that runs quickly and is good for testing purposes
-        * File of your own making. The format of these instance files can be found in `data/instances`. They all start with a first line, which is the name of the folder (e.g., `all`) in which the results will go with `results` (e.g., `results/all` for the non-batch mode, and `results/batches/all` for the batch mode). In the batch mode file, when a line ends with a `/`, it indicates a new "batch" that will go under a subfolder with the correponding name. For both files, the remaining lines indicate where the instances can be found (in `data/instances'). 
+        * File of your own making. The format of these instance files can be found in `data/instances`. They all start with a first line, which is the name of the folder (e.g., `all`) in which the results will go within `results` (e.g., `results/all` for the non-batch mode, and `results/batches/all` for the batch mode). In the batch mode file, when a line ends with a `/`, it indicates a new "batch" that will go under a subfolder with the correponding name. For both files, the remaining lines indicate where the instances can be found (in `data/instances'). 
     * What setting of PHA do you want to run? The options are just the best set of parameters per instance, a small test set of parameters per instance, or the full set of parameters used in the paper:
         * `best`
         * `test`
         * `full`
-		* Run instances sequentially or in batch mode? Batch mode can be used to speed up computations by running subsets of instances in parallel; for those working on shared machines, be aware that, e.g., with `all.batch`, this leads to 16 processes being run in parallel under option `best` and 48 when using option `full`.
+    * Run instances sequentially or in batch mode? Batch mode can be used to speed up computations by running subsets of instances in parallel; for those working on shared machines, be aware that, e.g., with `all.batch`, this leads to 16 processes being run in parallel under option `best` and 48 when using option `full`.
 
 2. Having made these choices, call the following sequence of commands
 
@@ -202,38 +200,17 @@ The algorithms in the paper are implemented in the code in `CglPHA.cpp`. They ar
         python ${PHA_DIR}/scripts/python_scripts/get_table.py 1 full
 
 
-## Environment variables ##
-
-These variables should be defined for the environment or locally.
-
-1. Define (the Cgl variables will need to be adjusted based on your setup)
-
-        export PHA_DIR="path to pha directory"
-        export PHA_DEBUG="${PHA_DIR}/Debug/PHA"
-        export PHA_RELEASE="${PHA_DIR}/Release/PHA"
-        export COIN_OR_DIR="${PHA_DIR}/coin-or"
-        export CGL_VERSION="Cgl-0.59"
-        export CGL_DEBUG="${COIN_OR_DIR}/${CGL_VERSION}/buildg"
-        export CGL_RELEASE="${COIN_OR_DIR}/${CGL_VERSION}/build"
-        export PYTHONPATH="${PYTHONPATH}:${PHA_DIR}/scripts/python_scripts:${PHA_DIR}/scripts/python_scripts/lib64/python:${PHA_DIR}/scripts/python_scripts/lib/python"
-
-2. BLAS, LAPACK: On Mac, you simply need to have the Accelerate framework (invoked by `-framework Accelerate`). On Linux, define (depending on your environment)
-
-        export ENV_LAPACK_LIB="/usr/lib64"
-        export ENV_LAPACK_LIB_NAME="liblapack.so.3"
-        export ENV_BLAS_LIB="/usr/lib64"
-        export ENV_BLAS_LIB_NAME="libblas.so.3"
-
-
 ## Notes ##
 
-The underlying solver used is OsiClp through COIN-OR. We treat slacks differently than does Clp: we assume all slacks/excess variablesare nonnegative, whereas Osi is enforcing that all slacks have a +1 coefficient (so rows in equality form become ax+s, where s is nonpositive for >= rows, nonnegative for <= rows, and = 0 for = rows). We instead have ax + s = b for ax <= b rows and ax - e = b for ax >= b rows, i.e., we add excess variables. Then in the nonbasic space, the LP opt is the origin, and only cuts with right-hand side 1 cut it off.
+Please contact me if there are any questions, as this is research code that has not been tested extensively. I can help with installation or explaining the code. There also remains quite a bit of "dead" code, which has not been removed typically because it proved useful for debugging or testing but in the end, or because I never got around to removing it.
 
-For example, consider any row ax >= b. Suppose the slack, s, in that row is basic. Thus, the tableau becomes s = b' - a'x (where b' and a' are obtained by multiplying by the basis inverse). We want to replace e = -s. Since the coefficient on e should ultimately by +1 in the final tableau, we need to multiply (-e) = b' - a'x by -1 to get e = -b' + a'x. The rays are thus just a' in that row, not -a' as they are for the <= rows.
+The underlying solver used is `OsiClp` through COIN-OR. We treat slacks differently than does `Clp`: we assume all slacks/excess variables are nonnegative, whereas `Osi` is enforcing that all slacks have a +1 coefficient (so rows in equality form become `ax+s`, where `s` is nonpositive for >= rows, nonnegative for <= rows, and = 0 for = rows). We instead have `ax + s = b` for `ax <= b` rows and `ax - e = b` for `ax >= b` rows, i.e., we add excess variables. Then in the nonbasic space, the LP optimum is the origin, and only cuts with right-hand side 1 cut it off.
+
+For example, consider any row `ax >= b`. Suppose the slack, `s`, in that row is basic. Thus, the tableau becomes `s = b' - a'x` (where `b'` and `a'` are obtained by multiplying by the basis inverse). We want to replace `e = -s`. Since the coefficient on `e` should ultimately by +1 in the final tableau, we need to multiply `(-e) = b' - a'x` by -1 to get `e = -b' + a'x`. The rays are thus just `a'` in that row, not `-a'` as they are for the <= rows.
 
 Similarly, we need to complement nonbasic slacks from >= rows. This is treated as we would treat any nonbasic variables at their upper-bound in the basis: negate the rays.
 
-We also remark that the results should all be reproducible insofar as the point-ray collections that are generated. However, the cuts themselves may vary. This can depend on your architecture, the version of Clp being used, and shared resources. As one example, there is a time limit imposed on the PRLP of five seconds. If this is encountered more frequently under your setup, you may see fewer cuts from the same collection. In addition, as we are solving Clp iteratively, there is some dependence on the previous iteration's solution. So one timeout can cause a ripple effect on subsequent optimal solutions (either causing more timeouts, or the choosing of different optimal bases, corresponding to different cuts).
+We also remark that the results should all be reproducible insofar as the point-ray collections that are generated, unless a different starting LP basis is selected (e.g., if a different version of `Clp` or a different LP solver is used). However, the cuts themselves may vary regardless. This can depend on your architecture, the version of `Clp` being used, and shared resources. As one example, there is a time limit imposed on the PRLP of five seconds. If this is encountered more frequently under your setup, you may see fewer cuts from the same collection. In addition, as we are solving `Clp` iteratively, there is some dependence on the previous iteration's solution. So one timeout can cause a ripple effect on subsequent optimal solutions (either causing more timeouts, or the choosing of different optimal bases, corresponding to different cuts).
 
 Lastly, in our experience, the instance `mod008` is particularly sensitive to the time limit we set and the speed of the review machine.
 
@@ -327,6 +304,6 @@ Aleksandr M. Kazachkov
 
 aleksandr DOT kazachkov AT polymtl DOT ca
 
-http://andrew.cmu.edu/~akazachk/
+https://akazachk.github.io
 
 Some of this code was also written with Selvaprabu Nadarajah, and some of it is based on code from Francois Margot and Giacomo Nannicini (from the implementation of `CglGMI`).
