@@ -6,7 +6,7 @@
 
 Implementation of partial hyperplane activation for generalized intersection cuts.
 When example code below has square brackets around an argument, this indicates the argument is optional.
-Note that the code may yield different results based on the setup in the system being used; e.g., the starting basis chosen by Clp could be affected.
+Note that the code may yield different results based on the setup in the system being used; e.g., the starting basis chosen by `Clp` could be affected.
 
 Included in this package is also a set of Python tools for automatically generating LaTeX tables. These are mostly undocumented (though somewhat commented in the code itself), but their sole purpose is to gather statistics from the log files, the core code for which is contained in the function `stat_col` in `scripts/python_scripts/processcsv/processcsv.py`, which can be used to find the average, minimum, maximum for a set of columns from a csv file for a set of instances run with any given set of parameters (useful for parameter analysis).
 
@@ -34,9 +34,9 @@ Included in this package is also a set of Python tools for automatically generat
 
         make release
 
-  which will create the executable `${PHA_DIR}/Release/PHA`.
+    which will create the executable `${PHA_DIR}/Release/PHA`.
 	
-  If the debug version is desired, call `make debug`, which will create the executable `{PHA_DIR}/Debug/PHA`.
+    If the debug version is desired, call `make debug`, which will create the executable `{PHA_DIR}/Debug/PHA`.
 
 4. Test the code by running `run_test.sh` from the `tests` directory.
 
@@ -52,7 +52,7 @@ Included in this package is also a set of Python tools for automatically generat
         export ENV_LAPACK_LIB="-framework Accelerate"
         export ENV_BLAS_LIB="-framework Accelerate"
 	
-  On Linux, define (depending on your environment)
+    On Linux, define (depending on your environment)
 
         export ENV_LAPACK_LIB="/usr/lib64"
         export ENV_LAPACK_LIB_NAME="liblapack.so.3"
@@ -98,7 +98,7 @@ Included in this package is also a set of Python tools for automatically generat
         cp ${PHA_DIR}/results/saved_results/pha.csv ${PHA_DIR}/results/pha-full.csv
         python ${PHA_DIR}/scripts/python_scripts/get_table.py 1
 	
-  The saved results contained in `results/saved_results/pha.csv` can be reproduced as well, per the more detailed instructions under "How do I perform more experiments". It took us about a month to do all the runs on all the instances. It is possible to choose only a subset of instances for which the reviewer may wish to reproduce the full set of results, e.g., using the file `data/instances/quick.batch`. We also give instructions below on how to write a file specifying a custom set of instances to test on.
+    The saved results contained in `results/saved_results/pha.csv` can be reproduced as well, per the more detailed instructions under "How do I perform more experiments". It took us about a month to do all the runs on all the instances. It is possible to choose only a subset of instances for which the reviewer may wish to reproduce the full set of results, e.g., using the file `data/instances/quick.batch`. We also give instructions below on how to write a file specifying a custom set of instances to test on.
 
 7. The output again goes to `results/tables`. Table 3 corresponds to the file named `hplane-analysis-short.csv`, while Table 4 is generated from the file `cut-heur-analysis-short.csv`. Note that the column "Wins" is computed manually for the paper. Alternatively, the user can refer to the file `results/tables/tables.xlsx` if he/she has access to a program for Excel-formatted files.
 
