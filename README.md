@@ -235,7 +235,7 @@ Lastly, in our experience, the instance `mod008` is particularly sensitive to th
 |   +-- tables/
 |       +-- tables.xlsx
 +-- scripts/
-|   +-- coin_scripts/
+|   +-- install_coin.sh
 |   +-- python_scripts/
 |   +-- run_scripts/
 |       +-- get_errors.sh
