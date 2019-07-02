@@ -1,4 +1,5 @@
 # Partial hyperplane activation for generalized intersection cuts #
+![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3266091.svg)
 ##### Aleksandr M. Kazachkov, Selvaprabu Nadarajah, Egon Balas, and Francois Margot
 ##### Contact information: Aleksandr M. Kazachkov, Carnegie Mellon University and Polytechnique Montreal, aleksandr DOT kazachkov AT polymtl DOT ca, https://akazachk.github.io/
 ##### Last edit: July 2019
