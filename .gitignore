@@ -1,0 +1,17 @@
+*~
+*.swp
+*.svn
+~$*
+.DS_Store
+.cproject
+.project
+.settings/
+Debug/
+Release/
+coin-or/
+lib/
+Bcp*/
+Cgl*/
+Clp*/
+test/
+*.pyc
